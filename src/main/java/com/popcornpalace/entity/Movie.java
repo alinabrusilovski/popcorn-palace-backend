@@ -36,7 +36,7 @@ public class Movie {
     @NotNull(message = "Rating is required")
     @DecimalMin(value = "0.0", message = "Rating must be at least 0.0")
     @DecimalMax(value = "10.0", message = "Rating cannot exceed 10.0")
-    @Column(nullable = false, precision = 3, scale = 1)
+    @Column(nullable = false)
     private Double rating;
 
     @NotNull(message = "Release year is required")

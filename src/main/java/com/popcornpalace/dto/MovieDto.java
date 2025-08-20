@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Year;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +33,6 @@ public class MovieDto {
     private Double rating;
 
     @NotNull(message = "Release year is required")
-    private Year releaseYear;
+    private Integer releaseYear;
 
 }

@@ -98,3 +98,8 @@ coverage/
 
 # Gradle wrapper jar file
 !gradle/wrapper/gradle-wrapper.jar
+
+.env
+
+# Docker / Postgres volume
+postgres-data/
