@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Component
@@ -21,6 +22,8 @@ public class ShowtimeService implements IShowtimeService {
     private final ShowtimeRepository showtimeRepository;
     private final MovieRepository movieRepository;
     private final TheaterRepository theaterRepository;
+
+    private static final Duration GAP = Duration.ofHours(1);
 
     @Override
     public ShowtimeDto createShowtime(ShowtimeDto showtimeDto) {
@@ -39,11 +42,16 @@ public class ShowtimeService implements IShowtimeService {
             throw new IllegalArgumentException("End time must be after start time");
         }
 
+        // extend the interval by 1 hour before and after - to check the buffer
+        LocalDateTime bufferedStart = showtimeDto.getStartTime().minus(GAP);
+        LocalDateTime bufferedEnd   = showtimeDto.getEndTime().plus(GAP);
+
         // Check for overlapping showtimes in the same theater
         if (showtimeRepository.existsOverlappingShowtime(
                 showtimeDto.getTheaterId(),
-                showtimeDto.getStartTime(),
-                showtimeDto.getEndTime())) {
+                bufferedStart,
+                bufferedEnd
+        )) {
             throw new IllegalArgumentException("Showtime overlaps with existing showtime in the same theater");
         }
 
@@ -79,11 +87,15 @@ public class ShowtimeService implements IShowtimeService {
             throw new IllegalArgumentException("End time must be after start time");
         }
 
+        // extend the interval by 1 hour before and after - to check the buffer
+        LocalDateTime bufferedStart = showtimeDto.getStartTime().minus(GAP);
+        LocalDateTime bufferedEnd   = showtimeDto.getEndTime().plus(GAP);
+
         // Check for overlapping showtimes in the same theater (excluding current showtime)
         if (showtimeRepository.existsOverlappingShowtimeExcluding(
                 showtimeDto.getTheaterId(),
-                showtimeDto.getStartTime(),
-                showtimeDto.getEndTime(),
+                bufferedStart,
+                bufferedEnd,
                 id)) {
             throw new IllegalArgumentException("Showtime overlaps with existing showtime in the same theater");
         }
