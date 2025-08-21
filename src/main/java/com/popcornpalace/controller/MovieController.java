@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/movies")
 @Tag(name = "Movie Management", description = "APIs for managing movies")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class MovieController {
 

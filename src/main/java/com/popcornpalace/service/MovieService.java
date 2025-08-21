@@ -4,17 +4,16 @@ import com.popcornpalace.dto.MovieDto;
 import com.popcornpalace.entity.Movie;
 import com.popcornpalace.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 @Transactional
 @RequiredArgsConstructor
-public class MovieService {
+public class MovieService implements IMovieService {
 
     private final MovieRepository movieRepository;
 
@@ -86,51 +85,4 @@ public class MovieService {
                 .releaseYear(movie.getReleaseYear())
                 .build();
     }
-
-////  Get movie by ID
-//    @Transactional(readOnly = true)
-//    public MovieDto getMovieById(Long id) {
-//        Movie movie = movieRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("Movie not found with ID: " + id));
-//        return convertToDto(movie);
-//    }
-//
-//
-////  Search movies by title
-//    @Transactional(readOnly = true)
-//    public List<MovieDto> searchMoviesByTitle(String title) {
-//        List<Movie> movies = movieRepository.findByTitleContainingIgnoreCase(title);
-//        return movies.stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
-//    }
-//
-////  Get movies by genre
-//    @Transactional(readOnly = true)
-//    public List<MovieDto> getMoviesByGenre(String genre) {
-//        List<Movie> movies = movieRepository.findByGenreIgnoreCase(genre);
-//        return movies.stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
-//    }
-//
-////  Get movies by release year
-//    @Transactional(readOnly = true)
-//    public List<MovieDto> getMoviesByReleaseYear(Integer year) {
-//        List<Movie> movies = movieRepository.findByReleaseYear(year);
-//        return movies.stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
-//    }
-//
-////  Get movies by minimum rating
-//    @Transactional(readOnly = true)
-//    public List<MovieDto> getMoviesByMinRating(Double minRating) {
-//        List<Movie> movies = movieRepository.findByRatingGreaterThanEqual(minRating);
-//        return movies.stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
-//    }
-//
-
 }
