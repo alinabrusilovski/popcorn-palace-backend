@@ -143,6 +143,8 @@ public class ShowtimeService implements IShowtimeService {
         return convertToDto(showtime);
     }
 
+
+
     private ShowtimeDto convertToDto(Showtime showtime) {
         return ShowtimeDto.builder()
                 .id(showtime.getId())

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -83,8 +82,10 @@ public class MovieService implements IMovieService {
         List<Movie> movies = movieRepository.findAll();
         return movies.stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
+
+
 
     //  Convert Movie entity to MovieDto
     private MovieDto convertToDto(Movie movie) {

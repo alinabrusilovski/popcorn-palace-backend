@@ -51,6 +51,8 @@ public class BookingService implements IBookingService {
             throw new IllegalArgumentException("Seat does not belong to the theater of the selected showtime");
         }
 
+
+
         Booking booking = Booking.builder()
                 .showtime(showtime)
                 .seat(seat)
