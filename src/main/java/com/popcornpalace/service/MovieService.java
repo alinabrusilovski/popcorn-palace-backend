@@ -2,8 +2,11 @@ package com.popcornpalace.service;
 
 import com.popcornpalace.dto.MovieDto;
 import com.popcornpalace.entity.Movie;
+import com.popcornpalace.exception.ConflictException;
 import com.popcornpalace.repository.MovieRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +24,8 @@ public class MovieService implements IMovieService {
     public MovieDto createMovie(MovieDto movieDto) {
         // Check if movie with same title already exists
         if (movieRepository.existsByTitleIgnoreCase(movieDto.getTitle())) {
-            throw new IllegalArgumentException("Movie with title '" + movieDto.getTitle() + "' already exists");
+            throw new ConflictException(
+                    "Movie with title '" + movieDto.getTitle() + "' already exists"); // 409
         }
 
         Movie movie = Movie.builder()
@@ -31,20 +35,27 @@ public class MovieService implements IMovieService {
                 .rating(movieDto.getRating())
                 .releaseYear(movieDto.getReleaseYear())
                 .build();
-
-        Movie savedMovie = movieRepository.save(movie);
-        return convertToDto(savedMovie);
+        try {
+            Movie savedMovie = movieRepository.save(movie);
+            return convertToDto(savedMovie);
+        } catch (DataIntegrityViolationException e) {
+            // In case of a race with UNIQUE(title) in the database
+            throw new ConflictException(
+                    "Movie with title '" + movieDto.getTitle() + "' already exists");
+        }
     }
 
     //  Update movie
     public MovieDto updateMovie(Long id, MovieDto movieDto) {
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found with ID: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Movie not found: " + id)); // 404
 
         // Check if new title conflicts with existing movie (excluding current movie)
         if (!movie.getTitle().equalsIgnoreCase(movieDto.getTitle()) &&
                 movieRepository.existsByTitleIgnoreCase(movieDto.getTitle())) {
-            throw new IllegalArgumentException("Movie with title '" + movieDto.getTitle() + "' already exists");
+            throw new ConflictException(
+                    "Movie with title '" + movieDto.getTitle() + "' already exists"); // 409
         }
 
         movie.setTitle(movieDto.getTitle());
@@ -60,7 +71,8 @@ public class MovieService implements IMovieService {
     //  Delete movie
     public void deleteMovie(Long id) {
         if (!movieRepository.existsById(id)) {
-            throw new IllegalArgumentException("Movie not found with ID: " + id);
+            throw new EntityNotFoundException(
+                    "Movie not found: " + id); // 404
         }
         movieRepository.deleteById(id);
     }

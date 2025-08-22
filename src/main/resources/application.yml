@@ -1,15 +1,21 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:${POSTGRES_PORT}/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:popcorn_palace}
+    username: ${POSTGRES_USER:admin}
+    password: ${POSTGRES_PASSWORD:admin}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate.format_sql: true
   flyway:
     enabled: true
 
 server:
-  port: ${APP_PORT}
+  port: ${APP_PORT:10001}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

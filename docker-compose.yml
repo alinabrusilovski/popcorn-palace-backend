@@ -1,16 +1,38 @@
 services:
-  postgres:
+  db:
     image: postgres:15
     container_name: popcorn_palace_db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: popcorn_palace
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
     ports:
-      - "${POSTGRES_PORT}"
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d popcorn_palace" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: popcorn_palace-backend
+    image: springboot-app:1.0
+    ports:
+      - "10001:10001"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: popcorn_palace
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_PORT: 5432
+      APP_PORT: 10001
 
 volumes:
-  postgres_data:
+  db_data:

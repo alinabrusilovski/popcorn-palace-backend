@@ -3,61 +3,68 @@ package com.popcornpalace.controller;
 import com.popcornpalace.dto.MovieDto;
 import com.popcornpalace.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
+import java.net.URI;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api/movies")
 @Tag(name = "Movie Management", description = "APIs for managing movies")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class MovieController {
 
     private final MovieService movieService;
 
     @PostMapping
-    @Operation(summary = "Create new movie", description = "Add a new movie to the system")
+    @Operation(summary = "Create a new movie")
+    @ApiResponse(responseCode = "201", description = "Created")
+    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/problem+json"))
+    @ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = "application/problem+json"))
     public ResponseEntity<MovieDto> createMovie(@Valid @RequestBody MovieDto movieDto) {
-        try {
-            MovieDto createdMovie = movieService.createMovie(movieDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdMovie);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        MovieDto created = movieService.createMovie(movieDto);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(created);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update movie", description = "Update an existing movie's information")
-    public ResponseEntity<MovieDto> updateMovie(@PathVariable Long id, @Valid @RequestBody MovieDto movieDto) {
-        try {
-            MovieDto updatedMovie = movieService.updateMovie(id, movieDto);
-            return ResponseEntity.ok(updatedMovie);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @Operation(summary = "Update movie")
+    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(mediaType = "application/problem+json"))
+    @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = "application/problem+json"))
+    @ApiResponse(responseCode = "409", description = "Conflict", content = @Content(mediaType = "application/problem+json"))
+    public ResponseEntity<MovieDto> updateMovie(
+            @PathVariable @NotNull @Positive Long id,
+            @Valid @RequestBody MovieDto movieDto) {
+        return ResponseEntity.ok(movieService.updateMovie(id, movieDto));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete movie", description = "Remove a movie from the system")
-    public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
-        try {
-            movieService.deleteMovie(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @Operation(summary = "Delete movie")
+    @ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = "application/problem+json"))
+    public ResponseEntity<Void> deleteMovie(@PathVariable @NotNull @Positive Long id) {
+        movieService.deleteMovie(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    @Operation(summary = "Get all movies", description = "Retrieve all movies in the system")
+    @Operation(summary = "Get all movies")
     public ResponseEntity<List<MovieDto>> getAllMovies() {
-        List<MovieDto> movies = movieService.getAllMovies();
-        return ResponseEntity.ok(movies);
+        return ResponseEntity.ok(movieService.getAllMovies());
     }
 }

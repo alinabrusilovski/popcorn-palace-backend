@@ -33,6 +33,8 @@ public class MovieDto {
     private Double rating;
 
     @NotNull(message = "Release year is required")
+    @Min(value = 1888, message = "Release year must be at least 1888")
+    @Max(value = 2030, message = "Release year cannot exceed 2030")
     private Integer releaseYear;
 
 }
