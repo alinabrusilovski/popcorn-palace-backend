@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Component
 @Transactional
@@ -48,9 +49,19 @@ public class ShowtimeService implements IShowtimeService {
                     "End time must be after start time");
         }
 
+        // end = start + movie.durationMinutes
+        Integer durationMinutes = movie.getDurationMinutes();
+        if (durationMinutes == null) {
+            throw new IllegalArgumentException("Movie duration is not set");
+        }
+        LocalDateTime expectedEnd = showtimeDto.getStartTime().plusMinutes(durationMinutes);
+        if (!sameMinute(expectedEnd, showtimeDto.getEndTime())) {
+            throw new IllegalArgumentException("End time must equal start time plus movie duration");
+        }
+
         // extend the interval by 1 hour before and after - to check the buffer
         LocalDateTime bufferedStart = showtimeDto.getStartTime().minus(GAP);
-        LocalDateTime bufferedEnd = showtimeDto.getEndTime().plus(GAP);
+        LocalDateTime bufferedEnd = expectedEnd.plus(GAP);
 
         // Check for overlapping showtimes in the same theater
         if (showtimeRepository.existsOverlappingShowtime(
@@ -66,7 +77,7 @@ public class ShowtimeService implements IShowtimeService {
                 .movie(movie)
                 .theater(theater)
                 .startTime(showtimeDto.getStartTime())
-                .endTime(showtimeDto.getEndTime())
+                .endTime(expectedEnd)
                 .price(showtimeDto.getPrice())
                 .build();
 
@@ -100,9 +111,19 @@ public class ShowtimeService implements IShowtimeService {
                     "End time must be after start time");
         }
 
+        // end = start + movie.durationMinutes
+        Integer durationMinutes = movie.getDurationMinutes();
+        if (durationMinutes == null) {
+            throw new IllegalArgumentException("Movie duration is not set");
+        }
+        LocalDateTime expectedEnd = showtimeDto.getStartTime().plusMinutes(durationMinutes);
+        if (!sameMinute(expectedEnd, showtimeDto.getEndTime())) {
+            throw new IllegalArgumentException("End time must equal start time plus movie duration");
+        }
+
         // extend the interval by 1 hour before and after - to check the buffer
         LocalDateTime bufferedStart = showtimeDto.getStartTime().minus(GAP);
-        LocalDateTime bufferedEnd = showtimeDto.getEndTime().plus(GAP);
+        LocalDateTime bufferedEnd = expectedEnd.plus(GAP);
 
         // Check for overlapping showtimes in the same theater (excluding current showtime)
         if (showtimeRepository.existsOverlappingShowtimeExcluding(
@@ -117,7 +138,7 @@ public class ShowtimeService implements IShowtimeService {
         showtime.setMovie(movie);
         showtime.setTheater(theater);
         showtime.setStartTime(showtimeDto.getStartTime());
-        showtime.setEndTime(showtimeDto.getEndTime());
+        showtime.setEndTime(expectedEnd);
         showtime.setPrice(showtimeDto.getPrice());
 
         Showtime updatedShowtime = showtimeRepository.save(showtime);
@@ -143,7 +164,9 @@ public class ShowtimeService implements IShowtimeService {
         return convertToDto(showtime);
     }
 
-
+    private static boolean sameMinute(LocalDateTime a, LocalDateTime b) {
+        return a.truncatedTo(ChronoUnit.MINUTES).equals(b.truncatedTo(ChronoUnit.MINUTES));
+    }
 
     private ShowtimeDto convertToDto(Showtime showtime) {
         return ShowtimeDto.builder()

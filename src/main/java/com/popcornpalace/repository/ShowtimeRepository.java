@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
 
 @Repository
@@ -12,8 +13,10 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
 
     //Check for overlapping showtimes in the same theater
     @Query("""
-                select (count(s) > 0) from Showtime s
-                where s.theater.id = :theaterId
+                select exists(
+                 select 1
+                 from Showtime s
+                 where s.theater.id = :theaterId
                   and s.startTime < :endTime
                   and s.endTime   > :startTime
             """)
@@ -23,8 +26,10 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
 
     //    Check for overlaping showtimes excluding a specific showtime (for updates)
     @Query("""
-                select (count(s) > 0) from Showtime s
-                where s.theater.id = :theaterId
+                select exists(
+                 select 1
+                 from Showtime s
+                 where s.theater.id = :theaterId
                   and s.id <> :excludeId
                   and s.startTime < :endTime
                   and s.endTime   > :startTime

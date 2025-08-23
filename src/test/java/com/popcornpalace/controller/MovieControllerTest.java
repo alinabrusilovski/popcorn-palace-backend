@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,8 +40,8 @@ class MovieControllerTest {
                 .id(1L)
                 .title("Test Movie")
                 .genre("Action")
-                .duration(120)
-                .rating(8.5)
+                .durationMinutes(120)
+                .rating(BigDecimal.valueOf(8.5))
                 .releaseYear(2024)
                 .build();
     }
@@ -71,8 +72,8 @@ class MovieControllerTest {
         MovieDto invalidDto = MovieDto.builder()
                 .title("") // Invalid: empty title
                 .genre("Action")
-                .duration(-10) // Invalid: negative duration
-                .rating(15.0) // Invalid: rating > 10
+                .durationMinutes(-10) // Invalid: negative duration
+                .rating(BigDecimal.valueOf(15.0)) // Invalid: rating > 10
                 .releaseYear(1800) // Invalid: too old
                 .build();
 
@@ -87,8 +88,8 @@ class MovieControllerTest {
     void getAllMovies_Success() throws Exception {
         // Given
         List<MovieDto> movies = List.of(
-                MovieDto.builder().id(1L).title("Movie 1").genre("Action").duration(120).rating(8.0).releaseYear(2024).build(),
-                MovieDto.builder().id(2L).title("Movie 2").genre("Comedy").duration(90).rating(7.5).releaseYear(2023).build()
+                MovieDto.builder().id(1L).title("Movie 1").genre("Action").durationMinutes(120).rating(BigDecimal.valueOf(8.0)).releaseYear(2024).build(),
+                MovieDto.builder().id(2L).title("Movie 2").genre("Comedy").durationMinutes(90).rating(BigDecimal.valueOf(7.5)).releaseYear(2023).build()
         );
         when(movieService.getAllMovies()).thenReturn(movies);
 
@@ -105,15 +106,14 @@ class MovieControllerTest {
     }
 
 
-
     @Test
     void updateMovie_Success() throws Exception {
         // Given
         MovieDto updateDto = MovieDto.builder()
                 .title("Updated Movie")
                 .genre("Drama")
-                .duration(150)
-                .rating(9.0)
+                .durationMinutes(150)
+                .rating(BigDecimal.valueOf(9.0))
                 .releaseYear(2025)
                 .build();
 
@@ -121,8 +121,8 @@ class MovieControllerTest {
                 .id(1L)
                 .title("Updated Movie")
                 .genre("Drama")
-                .duration(150)
-                .rating(9.0)
+                .durationMinutes(150)
+                .rating(BigDecimal.valueOf(9.0))
                 .releaseYear(2025)
                 .build();
 
@@ -145,8 +145,8 @@ class MovieControllerTest {
         MovieDto invalidDto = MovieDto.builder()
                 .title("") // Invalid: empty title
                 .genre("Action")
-                .duration(120)
-                .rating(8.5)
+                .durationMinutes(120)
+                .rating(BigDecimal.valueOf(8.5))
                 .releaseYear(2024)
                 .build();
 

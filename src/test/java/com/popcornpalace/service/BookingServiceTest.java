@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,8 +56,8 @@ class BookingServiceTest {
                 .id(1L)
                 .title("Test Movie")
                 .genre("Action")
-                .duration(120)
-                .rating(8.5)
+                .durationMinutes(120)
+                .rating(BigDecimal.valueOf(8.5))
                 .releaseYear(2024)
                 .build();
 
@@ -90,7 +91,7 @@ class BookingServiceTest {
                 .customerName("John Doe")
                 .customerEmail("john@example.com")
                 .totalPrice(new BigDecimal("15.00"))
-                .bookingDate(LocalDateTime.now())
+                .bookingDate(OffsetDateTime.now())
                 .build();
 
         testBookingDto = BookingDto.builder()
@@ -119,7 +120,7 @@ class BookingServiceTest {
         assertThat(result.getSeatId()).isEqualTo(1L);
         assertThat(result.getCustomerName()).isEqualTo("John Doe");
         assertThat(result.getCustomerEmail()).isEqualTo("john@example.com");
-        
+
         verify(showtimeRepository).findById(1L);
         verify(seatRepository).findById(1L);
         verify(bookingRepository).save(any(Booking.class));
@@ -141,7 +142,7 @@ class BookingServiceTest {
         assertThatThrownBy(() -> bookingService.createBooking(invalidDto))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Showtime not found");
-        
+
         verify(showtimeRepository).findById(999L);
         verify(seatRepository, never()).findById(any());
         verify(bookingRepository, never()).save(any());
@@ -164,7 +165,7 @@ class BookingServiceTest {
         assertThatThrownBy(() -> bookingService.createBooking(invalidDto))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Seat not found");
-        
+
         verify(showtimeRepository).findById(1L);
         verify(seatRepository).findById(999L);
         verify(bookingRepository, never()).save(any());
@@ -182,7 +183,7 @@ class BookingServiceTest {
         assertThatThrownBy(() -> bookingService.createBooking(testBookingDto))
                 .isInstanceOf(ConflictException.class)
                 .hasMessageContaining("Seat is already booked");
-        
+
         verify(showtimeRepository).findById(1L);
         verify(seatRepository).findById(1L);
         verify(bookingRepository).save(any(Booking.class));
@@ -219,7 +220,7 @@ class BookingServiceTest {
         assertThatThrownBy(() -> bookingService.createBooking(invalidDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Seat does not belong to the showtime's theater");
-        
+
         verify(showtimeRepository).findById(1L);
         verify(seatRepository).findById(2L);
         verify(bookingRepository, never()).save(any());

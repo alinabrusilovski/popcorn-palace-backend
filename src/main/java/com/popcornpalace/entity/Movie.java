@@ -1,8 +1,25 @@
 package com.popcornpalace.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 
 @Entity
@@ -31,13 +48,13 @@ public class Movie {
     @Min(value = 1, message = "Duration must be at least 1 minute")
     @Max(value = 480, message = "Duration cannot exceed 480 minutes")
     @Column(nullable = false)
-    private Integer duration;
+    private Integer durationMinutes;
 
     @NotNull(message = "Rating is required")
     @DecimalMin(value = "0.0", message = "Rating must be at least 0.0")
     @DecimalMax(value = "10.0", message = "Rating cannot exceed 10.0")
     @Column(nullable = false)
-    private Double rating;
+    private BigDecimal rating;
 
     @NotNull(message = "Release year is required")
     @Column(nullable = false)

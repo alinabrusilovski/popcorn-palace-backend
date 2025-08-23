@@ -30,7 +30,7 @@ public class MovieService implements IMovieService {
         Movie movie = Movie.builder()
                 .title(movieDto.getTitle())
                 .genre(movieDto.getGenre())
-                .duration(movieDto.getDuration())
+                .durationMinutes(movieDto.getDurationMinutes())
                 .rating(movieDto.getRating())
                 .releaseYear(movieDto.getReleaseYear())
                 .build();
@@ -59,7 +59,7 @@ public class MovieService implements IMovieService {
 
         movie.setTitle(movieDto.getTitle());
         movie.setGenre(movieDto.getGenre());
-        movie.setDuration(movieDto.getDuration());
+        movie.setDurationMinutes(movieDto.getDurationMinutes());
         movie.setRating(movieDto.getRating());
         movie.setReleaseYear(movieDto.getReleaseYear());
 
@@ -86,14 +86,13 @@ public class MovieService implements IMovieService {
     }
 
 
-
     //  Convert Movie entity to MovieDto
     private MovieDto convertToDto(Movie movie) {
         return MovieDto.builder()
                 .id(movie.getId())
                 .title(movie.getTitle())
                 .genre(movie.getGenre())
-                .duration(movie.getDuration())
+                .durationMinutes(movie.getDurationMinutes())
                 .rating(movie.getRating())
                 .releaseYear(movie.getReleaseYear())
                 .build();

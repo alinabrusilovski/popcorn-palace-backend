@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,16 +37,16 @@ class MovieServiceTest {
                 .id(1L)
                 .title("Test Movie")
                 .genre("Action")
-                .duration(120)
-                .rating(8.5)
+                .durationMinutes(120)
+                .rating(BigDecimal.valueOf(8.5))
                 .releaseYear(2024)
                 .build();
 
         testMovieDto = MovieDto.builder()
                 .title("Test Movie")
                 .genre("Action")
-                .duration(120)
-                .rating(8.5)
+                .durationMinutes(120)
+                .rating(BigDecimal.valueOf(8.5))
                 .releaseYear(2024)
                 .build();
     }
@@ -62,7 +63,7 @@ class MovieServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("Test Movie");
         assertThat(result.getGenre()).isEqualTo("Action");
-        assertThat(result.getDuration()).isEqualTo(120);
+        assertThat(result.getDurationMinutes()).isEqualTo(120);
         assertThat(result.getRating()).isEqualTo(8.5);
         assertThat(result.getReleaseYear()).isEqualTo(2024);
         
@@ -72,8 +73,8 @@ class MovieServiceTest {
     @Test
     void getAllMovies_Success() {
         // Given
-        Movie movie1 = Movie.builder().id(1L).title("Movie 1").genre("Action").duration(120).rating(8.0).releaseYear(2024).build();
-        Movie movie2 = Movie.builder().id(2L).title("Movie 2").genre("Comedy").duration(90).rating(7.5).releaseYear(2023).build();
+        Movie movie1 = Movie.builder().id(1L).title("Movie 1").genre("Action").durationMinutes(120).rating(BigDecimal.valueOf(8.0)).releaseYear(2024).build();
+        Movie movie2 = Movie.builder().id(2L).title("Movie 2").genre("Comedy").durationMinutes(90).rating(BigDecimal.valueOf(7.5)).releaseYear(2023).build();
         
         when(movieRepository.findAll()).thenReturn(List.of(movie1, movie2));
 
@@ -96,8 +97,8 @@ class MovieServiceTest {
         MovieDto updateDto = MovieDto.builder()
                 .title("Updated Movie")
                 .genre("Drama")
-                .duration(150)
-                .rating(9.0)
+                .durationMinutes(150)
+                .rating(BigDecimal.valueOf(9.0))
                 .releaseYear(2025)
                 .build();
 
@@ -105,8 +106,8 @@ class MovieServiceTest {
                 .id(1L)
                 .title("Updated Movie")
                 .genre("Drama")
-                .duration(150)
-                .rating(9.0)
+                .durationMinutes(150)
+                .rating(BigDecimal.valueOf(9.0))
                 .releaseYear(2025)
                 .build();
 
@@ -120,7 +121,7 @@ class MovieServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("Updated Movie");
         assertThat(result.getGenre()).isEqualTo("Drama");
-        assertThat(result.getDuration()).isEqualTo(150);
+        assertThat(result.getDurationMinutes()).isEqualTo(150);
         assertThat(result.getRating()).isEqualTo(9.0);
         assertThat(result.getReleaseYear()).isEqualTo(2025);
         

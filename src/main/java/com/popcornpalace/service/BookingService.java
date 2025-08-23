@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Slf4j
 @Component
@@ -52,14 +53,13 @@ public class BookingService implements IBookingService {
         }
 
 
-
         Booking booking = Booking.builder()
                 .showtime(showtime)
                 .seat(seat)
                 .customerName(bookingDto.getCustomerName())
                 .customerEmail(bookingDto.getCustomerEmail())
                 .totalPrice(showtime.getPrice())
-                .bookingDate(LocalDateTime.now())
+                .bookingDate(OffsetDateTime.now())
                 .build();
 
         try {

@@ -1,8 +1,14 @@
 package com.popcornpalace.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,7 +35,7 @@ public class ShowtimeDto {
     @Future(message = "End time must be in the future")
     private LocalDateTime endTime;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @NotNull(message = "Price is required")
     @DecimalMin(value = "0.01", message = "Price must be at least 0.01")
     @DecimalMax(value = "1000.00", message = "Price cannot exceed 1000.00")
     private BigDecimal price;
