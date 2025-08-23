@@ -37,7 +37,7 @@ public class ShowtimeService implements IShowtimeService {
 
         Theater theater = theaterRepository.findById(showtimeDto.getTheaterId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Theater not found: " + showtimeDto.getMovieId()));
+                        "Theater not found: " + showtimeDto.getTheaterId()));
 
         if (showtimeDto.getStartTime().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException(

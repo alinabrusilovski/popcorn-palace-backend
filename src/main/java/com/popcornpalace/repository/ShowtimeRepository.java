@@ -19,6 +19,7 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
                  where s.theater.id = :theaterId
                   and s.startTime < :endTime
                   and s.endTime   > :startTime
+                )
             """)
     boolean existsOverlappingShowtime(@Param("theaterId") Long theaterId,
                                       @Param("startTime") LocalDateTime startTime,
@@ -33,6 +34,7 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
                   and s.id <> :excludeId
                   and s.startTime < :endTime
                   and s.endTime   > :startTime
+                )
             """)
     boolean existsOverlappingShowtimeExcluding(@Param("theaterId") Long theaterId,
                                                @Param("startTime") LocalDateTime startTime,
